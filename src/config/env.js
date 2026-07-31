@@ -1,7 +1,9 @@
 // API base URL.
-// In dev, Vite proxies "/api" → https://api.homecarenursing.cloud (fixes CORS).
-// In production there is no proxy (static hosting), so we call the API
-// directly by its full URL. Override either case with VITE_API_BASE_URL.
+// Dev: Vite proxies "/api" → https://api.homecarenursing.cloud (fixes CORS).
+// Production (Render): render.yaml sets VITE_API_BASE_URL=/api and adds a
+// rewrite rule proxying "/api/*" → the API server, so requests are
+// same-origin and CORS never applies. The direct URL below is only a
+// fallback (it requires the API server to send CORS headers for this origin).
 const PROD_API_BASE_URL = 'https://api.homecarenursing.cloud/api'
 
 export const API_BASE_URL =

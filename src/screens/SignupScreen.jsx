@@ -8,16 +8,18 @@ import {
 const ALLOWED_PIN_CODES = new Set(['110014', '110003', '110048', '110019', '110065', '110017', '110049', '110029', '110024'])
 const GENDER_OPTIONS = ['Male', 'Female', 'Other']
 
-function Field({ icon: Icon, placeholder, value, onChange, type = 'text', inputMode, maxLength, disabled, right }) {
+function Field({ icon: Icon, placeholder, value, onChange, type = 'text', name, autoComplete, inputMode, maxLength, disabled, right }) {
   return (
     <div className="input-row">
       <Icon />
       <input
         className="input-field"
+        name={name}
         placeholder={placeholder}
         value={value}
         onChange={(e) => onChange(e.target.value)}
         type={type}
+        autoComplete={autoComplete}
         inputMode={inputMode}
         maxLength={maxLength}
         disabled={disabled}
@@ -76,6 +78,11 @@ export default function SignupScreen({ onRegister, onNavigate }) {
     return true
   }
 
+  const handleFormSubmit = (e) => {
+    e.preventDefault()
+    handleRegister()
+  }
+
   const handleRegister = async () => {
     setError('')
     if (!fullName.trim() || !email.trim() || !phone.trim() || !gender || !pincode.trim() || !password.trim()) {
@@ -108,7 +115,7 @@ export default function SignupScreen({ onRegister, onNavigate }) {
 
   return (
     <div className="auth-screen">
-      <div className="card">
+      <form className="card" onSubmit={handleFormSubmit} noValidate>
         <h1 className="card-title">Create Account</h1>
         <p className="card-subtitle">Fill in your details to get started.</p>
 
@@ -141,20 +148,20 @@ export default function SignupScreen({ onRegister, onNavigate }) {
 
         <div className="input-group">
           <label className="input-label">Full Name *</label>
-          <Field icon={MdPerson} placeholder="Enter full name" value={fullName} onChange={setFullName} disabled={loading} />
+          <Field icon={MdPerson} name="name" autoComplete="name" placeholder="Enter full name" value={fullName} onChange={setFullName} disabled={loading} />
         </div>
 
         {showEmail && (
           <div className="input-group">
             <label className="input-label">Email *</label>
-            <Field icon={MdEmail} placeholder="patient@demo.com" value={email} onChange={setEmail} type="email" disabled={loading} />
+            <Field icon={MdEmail} name="email" autoComplete="email" placeholder="patient@demo.com" value={email} onChange={setEmail} type="email" disabled={loading} />
           </div>
         )}
 
         {showPhone && (
           <div className="input-group">
             <label className="input-label">Phone *</label>
-            <Field icon={MdPhone} placeholder="+91 98765 43210" value={phone} onChange={setPhone} type="tel" disabled={loading} />
+            <Field icon={MdPhone} name="phone" autoComplete="tel" placeholder="+91 98765 43210" value={phone} onChange={setPhone} type="tel" disabled={loading} />
           </div>
         )}
 
@@ -191,6 +198,8 @@ export default function SignupScreen({ onRegister, onNavigate }) {
             <label className="input-label">Pin Code *</label>
             <Field
               icon={MdPinDrop}
+              name="pincode"
+              autoComplete="postal-code"
               placeholder="6-digit pin code"
               value={pincode}
               onChange={(v) => { setPincode(v.replace(/\D/g, '').slice(0, 6)); setError('') }}
@@ -207,6 +216,8 @@ export default function SignupScreen({ onRegister, onNavigate }) {
             <label className="input-label">Password *</label>
             <Field
               icon={MdLock}
+              name="password"
+              autoComplete="new-password"
               placeholder="Create password"
               value={password}
               onChange={setPassword}
@@ -223,7 +234,7 @@ export default function SignupScreen({ onRegister, onNavigate }) {
 
         {error ? <div className="error-text">{error}</div> : null}
 
-        <button type="button" className="primary-btn" onClick={handleRegister} disabled={!canContinue || loading}>
+        <button type="submit" className="primary-btn" disabled={!canContinue || loading}>
           {loading ? <span className="spinner" /> : (<><span>Register</span><MdArrowForward /></>)}
         </button>
 
@@ -233,7 +244,7 @@ export default function SignupScreen({ onRegister, onNavigate }) {
             Sign in
           </button>
         </div>
-      </div>
+      </form>
     </div>
   )
 }

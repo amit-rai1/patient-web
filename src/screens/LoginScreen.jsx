@@ -32,13 +32,14 @@ export default function LoginScreen({ onPasswordLogin, onOtpLogin, onNavigate })
     setLoading(false)
   }
 
-  const handleKeyDown = (e) => {
-    if (e.key === 'Enter') handleSubmit()
+  const handleFormSubmit = (e) => {
+    e.preventDefault()
+    handleSubmit()
   }
 
   return (
     <div className="auth-screen">
-      <div className="card">
+      <form className="card" onSubmit={handleFormSubmit} noValidate>
         <h1 className="card-title">Patient Sign In</h1>
         <p className="card-subtitle">Login with password or receive OTP on your phone.</p>
 
@@ -66,11 +67,12 @@ export default function LoginScreen({ onPasswordLogin, onOtpLogin, onNavigate })
             {mode === 'password' ? <MdEmail /> : <MdPhone />}
             <input
               className="input-field"
+              name="identifier"
               placeholder={mode === 'password' ? 'patient@demo.com' : '+91 98765 43210'}
               value={identifier}
               onChange={(e) => setIdentifier(e.target.value)}
-              onKeyDown={handleKeyDown}
               type={mode === 'password' ? 'text' : 'tel'}
+              autoComplete="username"
               autoCapitalize="none"
               disabled={loading}
             />
@@ -84,11 +86,12 @@ export default function LoginScreen({ onPasswordLogin, onOtpLogin, onNavigate })
               <MdLock />
               <input
                 className="input-field"
+                name="password"
                 placeholder="Enter password"
                 type={showPassword ? 'text' : 'password'}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                onKeyDown={handleKeyDown}
+                autoComplete="current-password"
                 disabled={loading}
               />
               <button type="button" className="visibility-btn" onClick={() => setShowPassword((p) => !p)} disabled={loading}>
@@ -100,7 +103,7 @@ export default function LoginScreen({ onPasswordLogin, onOtpLogin, onNavigate })
 
         {error ? <div className="error-text">{error}</div> : null}
 
-        <button type="button" className="primary-btn" onClick={handleSubmit} disabled={loading}>
+        <button type="submit" className="primary-btn" disabled={loading}>
           {loading ? <span className="spinner" /> : (mode === 'password' ? 'Sign In' : 'Send OTP')}
         </button>
 
@@ -110,7 +113,7 @@ export default function LoginScreen({ onPasswordLogin, onOtpLogin, onNavigate })
             Register now
           </button>
         </div>
-      </div>
+      </form>
     </div>
   )
 }
