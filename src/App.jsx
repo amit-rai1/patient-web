@@ -73,6 +73,14 @@ export default function App() {
     const apiUser = extractUser(payload) || {}
     const token = extractAuthToken(payload)
     const userId = apiUser.id || apiUser.userId || apiUser.UserId
+
+    // Guard: without a token or a user id the response is not a real login
+    // (e.g. an empty 200 from a misconfigured proxy) — fail loudly instead
+    // of entering the app with an anonymous, broken session.
+    if (!token && !userId) {
+      throw new Error('Unexpected response from the server. Please try again later.')
+    }
+
     setAuthToken(token)
 
     let profileData = apiUser
