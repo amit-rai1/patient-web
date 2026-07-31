@@ -1,0 +1,31 @@
+// Healthcare industry standard color palette (matches mobile app)
+export const C = {
+  primary: '#0d9488',
+  primaryDark: '#0f766e',
+  primaryLight: '#ccfbf1',
+  primaryMid: '#99f6e4',
+
+  accent: '#10b981',
+  accentLight: '#d1fae5',
+
+  bg: '#f0f9ff',
+  bgCard: '#ffffff',
+  bgMuted: '#f8fafc',
+
+  textPrimary: '#0f172a',
+  textSecondary: '#475569',
+  textMuted: '#94a3b8',
+  textOnPrimary: '#ffffff',
+
+  pending: { bg: '#fef9c3', text: '#854d0e', dot: '#eab308' },
+  approved: { bg: '#dbeafe', text: '#1e40af', dot: '#3b82f6' },
+  completed: { bg: '#d1fae5', text: '#065f46', dot: '#10b981' },
+  cancelled: { bg: '#fee2e2', text: '#991b1b', dot: '#ef4444' },
+
+  border: '#e2e8f0',
+  borderLight: '#f1f5f9',
+  shadow: '#0f172a',
+
+  danger: '#ef4444',
+  dangerLight: '#fee2e2',
+}
