@@ -1,7 +1,11 @@
 // API base URL.
 // In dev, Vite proxies "/api" → https://api.homecarenursing.cloud (fixes CORS).
-// For production, set VITE_API_BASE_URL env var to the full URL.
-export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api'
+// In production there is no proxy (static hosting), so we call the API
+// directly by its full URL. Override either case with VITE_API_BASE_URL.
+const PROD_API_BASE_URL = 'https://api.homecarenursing.cloud/api'
+
+export const API_BASE_URL =
+  import.meta.env.VITE_API_BASE_URL || (import.meta.env.DEV ? '/api' : PROD_API_BASE_URL)
 
 export function normalizeImageUri(uri) {
   if (!uri) return null
