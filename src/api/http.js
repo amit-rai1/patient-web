@@ -1,9 +1,18 @@
 import { API_BASE_URL } from '../config/env'
 
-let authToken = ''
+const TOKEN_STORAGE_KEY = 'hc_auth_token'
+
+// Restore the token from storage so a page refresh keeps the session alive.
+let authToken = typeof localStorage !== 'undefined' ? localStorage.getItem(TOKEN_STORAGE_KEY) || '' : ''
 
 export function setAuthToken(token) {
   authToken = token || ''
+  if (typeof localStorage === 'undefined') return
+  if (authToken) {
+    localStorage.setItem(TOKEN_STORAGE_KEY, authToken)
+  } else {
+    localStorage.removeItem(TOKEN_STORAGE_KEY)
+  }
 }
 
 const parseResponseDetailed = async (response) => {

@@ -22,7 +22,19 @@ import { setAuthToken } from './api/http'
 import { normalizeImageUri } from './config/env'
 
 const APP_TITLE = 'Home Care Nursing Services'
+const SESSION_STORAGE_KEY = 'hc_patient_session'
 const normalizePhone = (value = '') => value.replace(/\D/g, '')
+
+const loadStoredSession = () => {
+  try {
+    const raw = localStorage.getItem(SESSION_STORAGE_KEY)
+    if (!raw) return null
+    const stored = JSON.parse(raw)
+    return stored && typeof stored === 'object' && stored.id ? stored : null
+  } catch {
+    return null
+  }
+}
 
 const createUserProfile = (user = {}, fallback = {}) => ({
   id: user.id || user.userId || user.UserId || fallback.id || fallback.userId || 0,
@@ -48,7 +60,9 @@ const getErrorMessage = (error, fallback) => error?.message || fallback
 
 export default function App() {
   const toastTimerRef = useRef(null)
-  const [user, setUser] = useState(null)
+  // Restore the previous session so a hard refresh does NOT send the user
+  // back to the login page. The auth token is restored separately in api/http.
+  const [user, setUser] = useState(loadStoredSession)
   const [pendingAuth, setPendingAuth] = useState(null)
   const [toast, setToast] = useState(null)
   const [authScreen, setAuthScreen] = useState('login') // login | about | signup | otp
@@ -59,6 +73,30 @@ export default function App() {
   useEffect(() => {
     document.title = APP_TITLE
   }, [])
+
+  // Ask for confirmation before the tab / browser is closed or reloaded.
+  useEffect(() => {
+    const handleBeforeUnload = (event) => {
+      event.preventDefault()
+      // Required by Chrome to show the "Are you sure you want to leave?" dialog.
+      event.returnValue = 'Are you sure you want to close?'
+    }
+    window.addEventListener('beforeunload', handleBeforeUnload)
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload)
+  }, [])
+
+  // Keep the session in localStorage in sync with the logged-in user.
+  useEffect(() => {
+    try {
+      if (user) {
+        localStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(user))
+      } else {
+        localStorage.removeItem(SESSION_STORAGE_KEY)
+      }
+    } catch {
+      /* storage unavailable (private mode) — session won't survive refresh */
+    }
+  }, [user])
 
   const showToast = (message, type = 'info') => {
     if (toastTimerRef.current) clearTimeout(toastTimerRef.current)
