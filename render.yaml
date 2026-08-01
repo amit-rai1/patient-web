@@ -1,9 +1,8 @@
 # Render Blueprint — static site hosting for the patient web app.
 #
-# The /api/* rewrite rule proxies API calls through the same origin
-# (patient-web-tsb7.onrender.com), so the browser never makes a
-# cross-origin request and CORS does not apply. VITE_API_BASE_URL=/api
-# makes the built app use that same-origin path (see src/config/env.js).
+# The app calls the API directly at https://api.homecarenursing.cloud/api
+# (see src/config/env.js). VITE_API_BASE_URL is set explicitly so the
+# built bundle always points at the backend server.
 services:
   - type: web
     name: patient-web
@@ -11,14 +10,10 @@ services:
     buildCommand: npm ci && npm run build
     staticPublishPath: dist
     routes:
-      # Proxy API calls to the backend (same-origin → no CORS)
-      - type: rewrite
-        source: /api/*
-        destination: https://api.homecarenursing.cloud/api/*
-      # SPA fallback — serve index.html for any other path
+      # SPA fallback — serve index.html for any path
       - type: rewrite
         source: /*
         destination: /index.html
     envVars:
       - key: VITE_API_BASE_URL
-        value: /api
+        value: https://api.homecarenursing.cloud/api
